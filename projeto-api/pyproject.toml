@@ -1,0 +1,49 @@
+[project]
+name = "projeto-api"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Your Name",email = "you@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12, <4.0"
+dependencies = [
+    "fastapi[standard] (>=0.116.1,<0.117.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
+pytest-cov = "^6.2.1"
+taskipy = "^1.14.1"
+ruff = "^0.12.8"
+
+[tool.ruff]
+line-length = 79 # O comprimento máximo de linha para 79 caracteres (sugestão do PEP-8)
+extend-exclude = ['migrations'] # ‘migrations’ é uma pasta que o Alembic vai criar
+
+[tool.ruff.lint]
+preview = true
+select = ['I', 'F', 'E', 'W', 'PL', 'PT']
+
+[tool.ruff.format]
+preview = true
+quote-style = 'single' # Altera as aspas duplas por aspas simples para strings
+
+[tool.pytest.ini_options]
+pythonpath = "."
+addopts = '--cov=. -p no:warnings'
+
+[tool.taskipy.tasks]
+lint = 'ruff check'
+pre_format = 'ruff check --fix'
+format = 'ruff format'
+run = 'fastapi dev projeto_api/app.py'
+pre_test = 'task lint'
+test = 'pytest -s -x --cov=fast_zero -vv'
+post_test = 'coverage html'
+coverage = 'python -m http.server --directory htmlcov'
