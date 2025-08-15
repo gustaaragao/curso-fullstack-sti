@@ -12,7 +12,9 @@ dependencies = [
     "pydantic (>=2.11.7,<3.0.0)",
     "sqlalchemy (>=2.0.43,<3.0.0)",
     "pydantic-settings (>=2.10.1,<3.0.0)",
-    "alembic (>=1.16.4,<2.0.0)"
+    "alembic (>=1.16.4,<2.0.0)",
+    "pyjwt (>=2.10.1,<3.0.0)",
+    "pwdlib[argon2] (>=0.2.1,<0.3.0)"
 ]
 
 
@@ -50,4 +52,4 @@ run = 'fastapi dev projeto_api/app.py'
 pre_test = 'task lint'
 test = 'pytest -s -x --cov=fast_zero -vv'
 post_test = 'coverage html'
-coverage = 'python -m http.server --directory htmlcov'
+coverage = 'python -m http.server 8080 --directory htmlcov'
