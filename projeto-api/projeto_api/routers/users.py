@@ -55,7 +55,7 @@ def read_users(
     return {'users': users}
 
 
-@router.put('/users/{user_id}', response_model=UserPublic)
+@router.put('/{user_id}', response_model=UserPublic)
 def update_user(
     user_id: int, user: UserSchema, session: Session = Depends(get_session)
 ):
