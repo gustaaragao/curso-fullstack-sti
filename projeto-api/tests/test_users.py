@@ -4,18 +4,17 @@ from projeto_api.schemas import UserPublic
 
 
 def test_create_user(client):
-    ...
-    # response = client.post(
-    #     '/users/',
-    #     json={
-    #         'username': 'test',
-    #         'email': 'test@email.com',
-    #         'password': 'secret',
-    #     },
-    # )
+    response = client.post(
+        '/users/',
+        json={
+            'username': 'test',
+            'email': 'test@email.com',
+            'password': 'secret',
+        },
+    )
 
-    # assert response.status_code == HTTPStatus.CREATED
-    # assert response.json() == {'username': 'test', 'email': 'test@email.com'}
+    assert response.status_code == HTTPStatus.CREATED
+    assert response.json() == {'username': 'test', 'email': 'test@email.com'}
 
 
 def test_read_users_should_return_empty_list(client):
