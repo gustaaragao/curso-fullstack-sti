@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
@@ -10,18 +11,21 @@ from projeto_api.models import User
 from projeto_api.schemas import Token
 from projeto_api.security import (
     create_access_token,
+    get_current_user,
     verify_password,
 )
 
 router = APIRouter(prefix='/auth', tags=['auth'])
 
+OAuth2Form = Annotated[OAuth2PasswordRequestForm, Depends()]
+DBSession = Annotated[AsyncSession, Depends(get_session)]
+CurrentUser = Annotated[User, Depends(get_current_user)]
+
 
 @router.post('/token', response_model=Token)
 async def login_for_access_token(
-    session: AsyncSession = Depends(get_session),
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    # Formulário pronto do FastAPI que aparecerá no docs ou redocs
-    # possui os campos username e password
+    session: DBSession,
+    form_data: OAuth2Form,
 ):
     # Login é feito com o e-mail
     user = await session.scalar(
@@ -43,3 +47,10 @@ async def login_for_access_token(
     access_token = create_access_token(data={'sub': form_data.username})
 
     return {'access_token': access_token, 'token_type': 'bearer'}
+
+
+@router.post('/refresh_token', response_model=Token)
+async def refresh_access_token(user: CurrentUser):
+    new_access_token = create_access_token(data={'sub': user.email})
+
+    return {'access_token': new_access_token, 'token_type': 'bearer'}
