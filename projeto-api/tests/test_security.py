@@ -2,14 +2,17 @@ from http import HTTPStatus
 
 from jwt import decode
 
-from projeto_api.security import ALGORITHM, SECRET_KEY, create_access_token
+from projeto_api.security import create_access_token
+from projeto_api.settings import Settings
 
 
 def test_jwt():
     data = {'test': 'test'}
     token = create_access_token(data)
 
-    decoded = decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    decoded = decode(
+        token, Settings().SECRET_KEY, algorithms=[Settings().ALGORITHM]
+    )
 
     assert decoded['test'] == 'test'
     assert 'exp' in decoded

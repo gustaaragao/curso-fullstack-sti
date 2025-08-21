@@ -1,22 +1,31 @@
 from http import HTTPStatus
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from projeto_api.database import get_session
 from projeto_api.models import User
-from projeto_api.schemas import Message, UserList, UserPublic, UserSchema
+from projeto_api.schemas import (
+    FilterPage,
+    Message,
+    UserList,
+    UserPublic,
+    UserSchema,
+)
 from projeto_api.security import get_current_user, get_password_hash
 
 router = APIRouter(prefix='/users', tags=['Usuários'])
 
+DBSession = Annotated[AsyncSession, Depends(get_session)]
+CurrentUser = Annotated[User, Depends(get_current_user)]
+FiltersUsers = Annotated[FilterPage, Query()]
+
 
 @router.post('/', status_code=HTTPStatus.CREATED, response_model=UserPublic)
-async def create_user(
-    user_form: UserSchema, session: AsyncSession = Depends(get_session)
-):
+async def create_user(user_form: UserSchema, session: DBSession):
     db_user = await session.scalar(
         select(User).where(
             (User.username == user_form.username)
@@ -55,7 +64,7 @@ async def create_user(
 
 
 @router.get('/all', response_model=UserList)
-async def read_all_users(session: AsyncSession = Depends(get_session)):
+async def read_all_users(session: DBSession):
     qry = await session.scalars(select(User))
 
     users = qry.all()
@@ -65,11 +74,12 @@ async def read_all_users(session: AsyncSession = Depends(get_session)):
 
 @router.get('/', response_model=UserList)
 async def read_users(
-    skip: int = 0,
-    limit: int = 10,
-    session: AsyncSession = Depends(get_session),
+    session: DBSession,
+    filters: FiltersUsers,
 ):
-    qry = await session.scalars(select(User).offset(skip).limit(limit))
+    qry = await session.scalars(
+        select(User).offset(filters.offset).limit(filters.limit)
+    )
 
     users = qry.all()
 
@@ -80,8 +90,8 @@ async def read_users(
 async def update_user(
     user_id: int,
     user_form: UserSchema,
-    session: AsyncSession = Depends(get_session),
-    current_user: User = Depends(get_current_user),
+    session: DBSession,
+    current_user: CurrentUser,
 ):
     if current_user.id != user_id:
         raise HTTPException(
@@ -108,8 +118,8 @@ async def update_user(
 @router.delete('/{user_id}', response_model=Message)
 async def delete_user(
     user_id: int,
-    session: AsyncSession = Depends(get_session),
-    current_user: User = Depends(get_current_user),
+    session: DBSession,
+    current_user: CurrentUser,
 ):
     if current_user.id != user_id:
         raise HTTPException(

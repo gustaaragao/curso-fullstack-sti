@@ -29,6 +29,8 @@ pytest-cov = "^6.2.1"
 taskipy = "^1.14.1"
 ruff = "^0.12.8"
 pytest-asyncio = "^1.1.0"
+factory-boy = "^3.3.3"
+freezegun = "^1.5.5"
 
 [tool.ruff]
 line-length = 79 # O comprimento máximo de linha para 79 caracteres (sugestão do PEP-8)
@@ -36,7 +38,7 @@ extend-exclude = ['migrations'] # ‘migrations’ é uma pasta que o Alembic va
 
 [tool.ruff.lint]
 preview = true
-select = ['I', 'F', 'E', 'W', 'PL', 'PT']
+select = ['I', 'F', 'E', 'W', 'PL', 'PT', 'FAST']
 
 [tool.ruff.format]
 preview = true
