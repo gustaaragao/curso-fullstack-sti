@@ -58,7 +58,9 @@ async def read_todos(
         # Nao podemos usar o contains, pois o state é um Enum
         query = query.filter(Todo.state == filters.state)
 
-    result = await session.execute(query.offset(filters.offset).limit(filters.limit))
+    result = await session.execute(
+        query.offset(filters.offset).limit(filters.limit)
+    )
     todos = result.scalars().all()
 
     return {'todos': todos}
@@ -102,7 +104,7 @@ async def delete_todo(todo_id: int, user: CurrentUser, session: DBSession):
             status_code=HTTPStatus.NOT_FOUND, detail='Todo not found.'
         )
 
-    session.delete(db_todo)
+    await session.delete(db_todo)
     await session.commit()
 
     return {'message': 'Todo has been deleted successfully.'}

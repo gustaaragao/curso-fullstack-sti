@@ -58,10 +58,11 @@ def test_create_todo_invalid_state_error(client, token):
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
 
-def test_read_todos_should_return_5_todos(client, session, user, token):
+@pytest.mark.asyncio
+async def test_read_todos_should_return_5_todos(client, session, user, token):
     expect_todos = 5
     session.add_all(TodoFactory.create_batch(5, user_id=user.id))
-    session.commit()
+    await session.commit()
 
     response = client.get(
         '/todos/',
@@ -71,12 +72,13 @@ def test_read_todos_should_return_5_todos(client, session, user, token):
     assert len(response.json()['todos']) == expect_todos
 
 
-def test_read_todos_pagination_should_return_2_todos(
+@pytest.mark.asyncio
+async def test_read_todos_pagination_should_return_2_todos(
     client, session, user, token
 ):
     expect_todos = 2
     session.add_all(TodoFactory.create_batch(5, user_id=user.id))
-    session.commit()
+    await session.commit()
 
     response = client.get(
         '/todos/?limit=2',
@@ -86,13 +88,14 @@ def test_read_todos_pagination_should_return_2_todos(
     assert len(response.json()['todos']) == expect_todos
 
 
-def test_read_todos_filter_title_should_return_5_todos(
+@pytest.mark.asyncio
+async def test_read_todos_filter_title_should_return_5_todos(
     client, session, user, token
 ):
     expect_todos = 5
     title = 'Test Title'
     session.add_all(TodoFactory.create_batch(5, user_id=user.id, title=title))
-    session.commit()
+    await session.commit()
 
     response = client.get(
         f'/todos/?title={title}', headers={'Authorization': f'Bearer {token}'}
@@ -101,7 +104,8 @@ def test_read_todos_filter_title_should_return_5_todos(
     assert len(response.json()['todos']) == expect_todos
 
 
-def test_read_todos_filter_description_should_return_5_todos(
+@pytest.mark.asyncio
+async def test_read_todos_filter_description_should_return_5_todos(
     client, session, user, token
 ):
     expect_todos = 5
@@ -109,7 +113,7 @@ def test_read_todos_filter_description_should_return_5_todos(
     session.add_all(
         TodoFactory.create_batch(5, user_id=user.id, description=description)
     )
-    session.commit()
+    await session.commit()
 
     response = client.get(
         f'/todos/?description={description}',
@@ -119,13 +123,14 @@ def test_read_todos_filter_description_should_return_5_todos(
     assert len(response.json()['todos']) == expect_todos
 
 
-def test_read_todos_filter_state_should_return_5_todos(
+@pytest.mark.asyncio
+async def test_read_todos_filter_state_should_return_5_todos(
     client, session, user, token
 ):
     expect_todos = 5
     state = TodoState.draft
     session.add_all(TodoFactory.create_batch(5, user_id=user.id, state=state))
-    session.commit()
+    await session.commit()
 
     response = client.get(
         f'/todos/?state={state.value}',
@@ -135,7 +140,8 @@ def test_read_todos_filter_state_should_return_5_todos(
     assert len(response.json()['todos']) == expect_todos
 
 
-def test_read_todos_filter_combined_should_return_5_todos(
+@pytest.mark.asyncio
+async def test_read_todos_filter_combined_should_return_5_todos(
     client, session, user, token
 ):
     expect_todos = 5
@@ -160,7 +166,7 @@ def test_read_todos_filter_combined_should_return_5_todos(
         )
     )
 
-    session.commit()
+    await session.commit()
 
     response = client.get(
         '/todos/?title=Combined&description=Combined&state=done',
@@ -170,14 +176,15 @@ def test_read_todos_filter_combined_should_return_5_todos(
     assert len(response.json()['todos']) == expect_todos
 
 
-def test_read_todos_should_return_all_expected_fields(
+@pytest.mark.asyncio
+async def test_read_todos_should_return_all_expected_fields(
     client, session, user, token, mock_db_time
 ):
     with mock_db_time(model=Todo) as time:
         todo = TodoFactory(user_id=user.id)
         session.add(todo)
-        session.commit()
-        session.refresh(todo)
+        await session.commit()
+        await session.refresh(todo)
 
         response = client.get(
             '/todos/', headers={'Authorization': f'Bearer {token}'}
