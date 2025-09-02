@@ -8,10 +8,10 @@ export default function Home() {
   const { isAuthenticated, user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="h-screen bg-gray-50 flex flex-col">
       <Navbar />
       
-      <main className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <main className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
             Todo App
@@ -57,35 +57,6 @@ export default function Home() {
                 </Link>
               </div>
             )}
-          </div>
-        </div>
-
-        <div className="mt-16">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                User Management
-              </h3>
-              <p className="text-gray-600">
-                Create, update, and manage user accounts with secure authentication.
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Todo Management
-              </h3>
-              <p className="text-gray-600">
-                Create, organize, and track your todos with different states and filters.
-              </p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                FastAPI Backend
-              </h3>
-              <p className="text-gray-600">
-                Powered by FastAPI with async database operations and JWT authentication.
-              </p>
-            </div>
           </div>
         </div>
       </main>

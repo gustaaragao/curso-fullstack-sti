@@ -159,11 +159,6 @@ class ApiClient {
       method: 'DELETE',
     });
   }
-
-  // Health check
-  async healthCheck(): Promise<{ message: string }> {
-    return this.request<{ message: string }>('/');
-  }
 }
 
 export const apiClient = new ApiClient();
